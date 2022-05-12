@@ -13,14 +13,12 @@ private:
     string grades;
 
 public:
-    static int totalStudent;
     int getId();
     void setData(vector<Student> stdnt, char choice);
     void getData(char a);
     void calculate();
 };
 string Student::subjects[3] = {"Math   ", "English", "Science"};
-int Student::totalStudent;
 
 int Student::getId()
 {
@@ -30,13 +28,18 @@ void Student::setData(vector<Student> stdnt, char choice)
 {
     cout << "Enter name : ";
     getline(cin, name);
-    if(choice =='1'){
-        idAgain:
+    // if user choses to edit existing student, he cant change the id
+    if (choice == '1')
+    {
+    idAgain:
         cout << "Enter ID   : ";
         cin >> stid;
-        for (auto i = stdnt.begin(); i != stdnt.end(); i++){
-            if (i->getId() == stid){
-                cout <<"ID already exists\n";
+        // below lines prevents user from entering same id for multiple students
+        for (auto i = stdnt.begin(); i != stdnt.end(); i++)
+        {
+            if (i->getId() == stid)
+            {
+                cout << "ID already exists\n";
                 goto idAgain;
             }
         }
@@ -44,6 +47,7 @@ void Student::setData(vector<Student> stdnt, char choice)
     cout << "Enter marks\n";
     for (int i = 0; i < 3; i++)
     {
+    // below lines prevents user from entering invalid marks
     enterAgain:
         cout << subjects[i] << " : ";
         cin >> marks[i];
@@ -61,11 +65,12 @@ void Student::getData(char a)
 {
     cout << "Name  : " << name << endl;
     cout << "ID    : " << stid << endl;
+    // below lines prevents printing detailed information while
+    // user chose to see full list of the students
     if (a == '2')
         for (int i = 0; i < 3; i++)
-        {
             cout << subjects[i] << " : " << marks[i] << endl;
-        }
+
     cout << "Grade : " << grades << endl;
     if (a == '5')
         cout << "\n";
@@ -111,23 +116,29 @@ void menu()
     cout << "6. Exit\n";
 }
 
-bool searchStudent(vector <Student> & stdnt, char choice){
+bool searchStudent(vector<Student> &stdnt, char choice)
+{
+    // as vectors dont pass the address by default
+    // we have to grab the address in the parameter(not in the arguement)
     int id;
     cout << "Enter ID of the student : ";
     cin >> id;
     cin.ignore();
     int size = stdnt.size();
-    int s=0;
-    for (auto i = stdnt.begin() ; i != stdnt.end(); i++, s++)
+    int s = 0;
+    for (auto i = stdnt.begin(); i != stdnt.end(); i++, s++)
     {
-        if (i->getId() == id){
-            if(choice=='2')
+        if (i->getId() == id)
+        {
+            if (choice == '2')
                 i->getData(choice);
-            else if (choice=='3'){
-                i->setData(stdnt,choice);
+            else if (choice == '3')
+            {
+                i->setData(stdnt, choice);
                 cout << "Student's information updated\n";
             }
-            else if(choice=='4'){
+            else if (choice == '4')
+            {
                 stdnt.erase(i);
                 cout << "Student's information deleted\n";
             }
@@ -139,7 +150,7 @@ bool searchStudent(vector <Student> & stdnt, char choice){
 
 int main()
 {
-
+    // using vector so that we can add as many students as we want
     vector<Student> stdnt;
     char choice;
     do
@@ -152,17 +163,16 @@ int main()
 
         if (choice == '1')
         {
-            Student :: totalStudent++;
             Student *st = new Student;
-            st->setData(stdnt,choice);
+            st->setData(stdnt, choice);
             stdnt.push_back(*st);
-            delete st;
+            delete st; // we don't need this anymore, otherwise it will be waste of memory
             cout << "Press ENTER to continue..." << endl;
             cin.get();
         }
         else if (choice == '2' || choice == '3' || choice == '4')
         {
-            if(!(searchStudent(stdnt,choice)))
+            if (!(searchStudent(stdnt, choice)))
                 cout << "Student not found\n";
             cout << "Press ENTER to continue..." << endl;
             cin.ignore();
