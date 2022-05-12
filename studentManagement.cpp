@@ -15,7 +15,7 @@ private:
 public:
     static int totalStudent;
     int getId();
-    void setData();
+    void setData(vector<Student> stdnt, char choice);
     void getData(char a);
     void calculate();
 };
@@ -26,12 +26,21 @@ int Student::getId()
 {
     return stid;
 }
-void Student::setData()
+void Student::setData(vector<Student> stdnt, char choice)
 {
     cout << "Enter name : ";
     getline(cin, name);
-    cout << "Enter ID   : ";
-    cin >> stid;
+    if(choice =='1'){
+        idAgain:
+        cout << "Enter ID   : ";
+        cin >> stid;
+        for (auto i = stdnt.begin(); i != stdnt.end(); i++){
+            if (i->getId() == stid){
+                cout <<"ID already exists\n";
+                goto idAgain;
+            }
+        }
+    }
     cout << "Enter marks\n";
     for (int i = 0; i < 3; i++)
     {
@@ -58,7 +67,7 @@ void Student::getData(char a)
             cout << subjects[i] << " : " << marks[i] << endl;
         }
     cout << "Grade : " << grades << endl;
-    if (a == '4')
+    if (a == '5')
         cout << "\n";
 }
 
@@ -97,8 +106,35 @@ void menu()
     cout << "1. Enter student\n";
     cout << "2. Get student's information\n";
     cout << "3. Edit student's information\n";
-    cout << "4. Show all students' information\n";
-    cout << "5. Exit\n";
+    cout << "4. Delete student's information\n";
+    cout << "5. Show all students' information\n";
+    cout << "6. Exit\n";
+}
+
+bool searchStudent(vector <Student> & stdnt, char choice){
+    int id;
+    cout << "Enter ID of the student : ";
+    cin >> id;
+    cin.ignore();
+    int size = stdnt.size();
+    int s=0;
+    for (auto i = stdnt.begin() ; i != stdnt.end(); i++, s++)
+    {
+        if (i->getId() == id){
+            if(choice=='2')
+                i->getData(choice);
+            else if (choice=='3'){
+                i->setData(stdnt,choice);
+                cout << "Student's information updated\n";
+            }
+            else if(choice=='4'){
+                stdnt.erase(i);
+                cout << "Student's information deleted\n";
+            }
+            return true;
+        }
+    }
+    return false;
 }
 
 int main()
@@ -116,58 +152,30 @@ int main()
 
         if (choice == '1')
         {
+            Student :: totalStudent++;
             Student *st = new Student;
-            st->setData();
+            st->setData(stdnt,choice);
             stdnt.push_back(*st);
             delete st;
-            cout << "Press any key to continue..." << endl;
+            cout << "Press ENTER to continue..." << endl;
             cin.get();
         }
-        else if (choice == '2')
+        else if (choice == '2' || choice == '3' || choice == '4')
         {
-
-            int id;
-            cout << "Enter ID of the student : ";
-            cin >> id;
+            if(!(searchStudent(stdnt,choice)))
+                cout << "Student not found\n";
+            cout << "Press ENTER to continue..." << endl;
             cin.ignore();
-
-            for (auto i = stdnt.begin(); i != stdnt.end(); i++)
-            {
-                if (i->getId() == id)
-                    i->getData('2');
-            }
-
-            cout << "Press ENTER to continue..." << endl;
-            cin.get();
         }
-        else if (choice == '3')
+        else if (choice == '5')
         {
-            int id;
-            cout << "Enter ID of the student : ";
-            cin >> id;
+            for (auto i = stdnt.begin(); i != stdnt.end(); i++)
+                i->getData('5');
+            cout << "Press ENTER to continue..." << endl;
             cin.ignore();
-
-            for (auto i = stdnt.begin(); i != stdnt.end(); i++)
-            {
-                if (i->getId() == id)
-                    i->setData();
-            }
-
-            cout << "Press ENTER to continue..." << endl;
-            cin.get();
-        }
-        else if (choice == '4')
-        {
-            for (auto i = stdnt.begin(); i != stdnt.end(); i++)
-            {
-                i->getData('4');
-            }
-
-            cout << "Press ENTER to continue..." << endl;
-            cin.get();
         }
 
-    } while (choice != '5');
+    } while (choice != '6');
 
     return 0;
 }
