@@ -12,6 +12,7 @@ private:
     static string subjects[3];
     string grades;
 
+
 public:
     int getId();
     void setData(vector<Student> stdnt, char choice);
